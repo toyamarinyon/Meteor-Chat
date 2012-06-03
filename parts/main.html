@@ -1,0 +1,50 @@
+<template name="timeline">
+<div style="margin-top:10px"></div>
+<div class="container">
+<div class="span6 offset3"><h2>Social Talk !</h2></div>
+<div class="span6 offset3">
+<p class="login"><span class="user">{{user}}</span> でログイン中</p>
+{{> entry}}
+<hr class="soften"/>
+{{> messages}}
+</div>
+</div>
+
+</div>
+</template>
+
+<template name="entry">
+  <div class="well" id="add-message">
+    <textarea name="text" placeholder="コメント" id="form-text" class="span5" rows="2"/>
+<!--    <input type="text" name="title" placeholder="page title" id="form-title" />-->
+<!--    <input type="text" name="quote" placeholder="quoted sentence" id="form-quote" />-->
+<!--    <input type="text" name="comment" placeholder="comment" id="form-comment" />-->
+	<label></label>
+    <button class="btn btn-primary" style="width:106px;">投稿☆</button>
+  </div>
+</template>
+
+<template name="messages">
+  <div id="messages" class="messages">
+    {{#if user_filter}}
+    <p>&laquo; <span class="navigate">Back to public timeline.</span></p>
+    {{/if}}
+  <dl>
+    {{#each messages}}
+      {{> message}}
+    {{/each}}
+  </dl>
+  </div>
+</template>
+
+<template name="message">
+<div class="well" style="color:#777;">
+  <span class="user">{{user}}</span>
+<hr class="soften" style="margin:3px auto 10px;"/>
+	<p>
+  {{#if text}}
+  {{text}}
+  {{/if}}
+	</p>
+</div>
+</template>

@@ -1,11 +1,7 @@
-@Bookmarks = new Meteor.Collection "bookmarks"
+@Messeages = new Meteor.Collection "Messages"
 
-@Bookmarks.validate = (bookmark) ->
-  if not bookmark.url
-    return false
-  if not bookmark.url.match /https?:\/\//
-    return false
-  if not bookmark.user
+@Messeages.validate = (message) ->
+  if not message.user
     return false
   return true
 
@@ -24,51 +20,52 @@ if Meteor.is_client
       if user = $("#form-user").val()
         Session.set "user", user
 
+  Template.timeline.user = () ->
+    return Session.get "user"
+
   Template.entry.events =
     'click button' : () ->
-      bookmark =
+      message =
         user: Session.get "user"
-        url:     $("#form-url").val()
-        title:   $("#form-title").val()
-        quote:   $("#form-quote").val()
-        comment: $("#form-comment").val()
+        text: $("#form-text").val()
         posted_at: Date.now()
 
-      if not Bookmarks.validate bookmark
+      if not Messeages.validate message
         alert 'failed validation'
         return
 
-      entry = Bookmarks.findOne user: bookmark.user, url: bookmark.url
+      entry = Messeages.findOne user: message.user, message: message.text
+      console.log(entry)
       if entry
-        Bookmarks.update { _id: entry._id }, { $set: title: bookmark.title, comment: bookmark.comment, quote: bookmark.quote }
+        Messeages.update { _id: entry._id }, { $set: message: message.text }
+        console.log('update');
       else
-        Bookmarks.insert bookmark
+        console.log('insert');
+        console.log(message);
+        Messeages.insert message
 
-      for elem in ['url', 'title', 'quote', 'comment']
+      for elem in ['text']
         $("#form-#{elem}").val("")
 
-  Template.bookmark.host = (url) ->
-    return url.split("/")[2]
-
-  Template.bookmarks.bookmarks = () ->
+  Template.messages.messages = () ->
     user_filter = Session.get 'user_filter'
     selector = if user_filter then { user: user_filter } else {}
-    return Bookmarks.find selector, { sort: { posted_at: -1 } }
+    return Messeages.find selector, { sort: { posted_at: -1 } }
 
-  Template.bookmarks.events =
+  Template.messages.events =
     'click span.navigate' : () ->
       Router.navigate "", true
 
-  Template.bookmarks.user_filter = () ->
+  Template.messages.user_filter = () ->
     return Session.get 'user_filter'
 
   BookmarkRouter = Backbone.Router.extend
     routes:
       "" : "timeline"
-      ":user" : "bookmarks"
+      ":user" : "messages"
     timeline : () ->
       Session.set 'user_filter', null
-    bookmarks : (user) ->
+    messages : (user) ->
       Session.set 'user_filter', user
 
   Router = new BookmarkRouter
